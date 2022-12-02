@@ -1,0 +1,68 @@
+lowercaseOutputName: true
+rules:
+  # jmx kafka.connect:type=connector-task-metrics,connector="{connector}",task="{task}<> status"
+  ## prometheus kafka_connect_connector_status{connector="fnz-poa-development-f63quldves-breaches-user_table",status="failed",task="0",} 1.0
+  - pattern: 'kafka.connect<type=connector-task-metrics, connector=(.+), task=(.+)><>status: ([a-z-]+)'
+    name: kafka_connect_connector_status
+    value: 1
+    labels:
+      connector: "$1"
+      task: "$2"
+      status: "$3"
+    help: "Kafka Connect JMX Connector status $2"
+    type: GAUGE
+
+
+  #kafka.producer:type=producer-topic-metrics,client-id="{clientid}",topic="{topic}"", partition="{partition}"
+  #kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{clientid}",topic="{topic}"", partition="{partition}"
+  - pattern: kafka.(.+)<type=(.+)-metrics, client-id=(.+), topic=(.+), partition=(.+)><>(.+-lag)
+    name: kafka_$2_$6
+    labels:
+      clientId: "$3"
+      topic: "$4"
+      partition: "$5"
+    help: "Kafka lag $1 JMX metric type $2"
+    type: GAUGE
+
+  #kafka.producer:type=producer-topic-metrics,client-id="{clientid}",topic="{topic}"
+  #kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{clientid}",topic="{topic}"", partition="{partition}"
+  - pattern: kafka.(.+)<type=(.+)-metrics, client-id=(.+), topic=(.+)><>(.+consumed-total)
+    name: kafka_$2_$5
+    labels:
+      clientId: "$3"
+      topic: "$4"
+    help: "Kafka consumed total $1 JMX metric type $2"
+    type: GAUGE
+
+  #kafka.connect:type=task-error-metrics,connector="{connector}",task="{task}"
+  #kafka.connect:type=source-task-metrics,connector="{connector}",task="{task}"
+  #kafka.connect:type=sink-task-metrics,connector="{connector}",task="{task}"
+  #kafka.connect:type=connector-task-metrics,connector="{connector}",task="{task}"
+  - pattern: kafka.connect<type=(.+)-metrics, connector=(.+), task=(.+)><>(.+-total|.+-failures|.+-errors|.+-retries|.+-skipped)
+    name: kafka_connect_$1_$4
+    labels:
+      connector: "$2"
+      task: "$3"
+    help: "Kafka Connect metrics, connector, task JMX metric type $1"
+    type: GAUGE
+
+  #kafka.connect:type=connector-metrics,connector="{connector}"
+  #kafka.connect:type=connect-worker-metrics,connector="{connector}"
+  - pattern: kafka.connect<type=connect-worker-metrics, connector=(.+)><>([a-z-]+)
+    name: kafka_connector_worker_$2
+    labels:
+      connector: "$1"
+    help: "Kafka Connect with connector worker JMX metric $1"
+    type: GAUGE
+
+  #kafka.connect:type=connect-worker-metrics
+  - pattern: kafka.connect<type=connect-worker-metrics><>([a-z-]+)
+    name: kafka_connect_worker_$1
+    help: "Kafka Connect without connector JMX metric worker"
+    type: GAUGE
+
+  #kafka.connect:type=connect-worker-rebalance-metrics
+  - pattern: kafka.connect<type=connect-worker-rebalance-metrics><>([a-z-]+)
+    name: kafka_connect_worker_rebalance_$1
+    help: "Kafka Connect JMX metric rebalance information"
+    type: GAUGE

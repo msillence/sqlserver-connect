@@ -1,0 +1,44 @@
+{
+    "name": "fnz-one-1",
+    "config": {
+      "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
+      "database.hostname": "<hostname>",
+      "database.port": "1433",
+      "database.user" : "<username>",
+      "database.password": "<password>",
+      "database.names": "<database-host>",
+      "topic.prefix": "fnzone",
+      "heartbeat.interval.ms": "10000",
+      "topic.heartbeat.prefix": "sqlserver_heartbeat",
+      "table.include.list": "<schema>.<table1>,<schema>.<table2>",
+      "database.encrypt": false,
+
+      "poll.interval.ms": "2000",
+      "tasks.max": "1",
+      "snapshot.mode": "initial",
+
+      "schema.history.internal.kafka.topic":"sqlserver_schema_history",
+
+      "schema.history.internal.kafka.bootstrap.servers": "<bootstrap.server:port>",
+      "schema.history.internal.consumer.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"<key>\" password=\"<secret>\";",
+      "schema.history.internal.consumer.ssl.endpoint.identification.algorithm": "https",
+      "schema.history.internal.consumer.sasl.mechanism": "PLAIN",
+      "schema.history.internal.consumer.security.protocol": "SASL_SSL",
+      "schema.history.internal.producer.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"<key>\" password=\"<secret>\";",
+      "schema.history.internal.producer.ssl.endpoint.identification.algorithm": "https",
+      "schema.history.internal.producer.sasl.mechanism": "PLAIN",
+      "schema.history.internal.producer.security.protocol": "SASL_SSL",
+
+      "transforms.unwrap.delete.handling.mode": "rewrite",
+      "transforms": "unwrap,schemarename",
+      "transforms.unwrap.drop.tombstones": "false",
+      "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+      "sanitize.field.names": "true",
+      "topic.creation.default.cleanup.policy": "compact",
+      "topic.creation.default.retention.ms": -1,
+      "topic.creation.default.replication.factor": 3,
+      "topic.creation.default.partitions": 1,
+      "transforms.schemarename.type": "com.fnz.kakfa.smt.RepackageJavaFriendlySchemaRenamer",
+      "transforms.schemarename.package": "com.fnz.one.debezium.schema"
+    }
+  }

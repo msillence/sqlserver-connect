@@ -1,0 +1,13 @@
+steps:
+  - name: "eu.gcr.io/$PROJECT_ID/java11-maven3-8-gcp:latest"
+    entrypoint: "/bin/bash"
+    args:
+    - "-c"
+    - |
+      set -xeo pipefail
+
+      mvn clean dependency:copy-dependencies -DoutputDirectory=target/deps
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'eu.gcr.io/${PROJECT_ID}/sqlserver-connect:${TAG_NAME}', '.']
+
+images: ['eu.gcr.io/${PROJECT_ID}/sqlserver-connect:${TAG_NAME}']
