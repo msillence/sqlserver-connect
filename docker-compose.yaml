@@ -6,8 +6,10 @@ services:
     image: core-harbor.lighthouse.jhc.uk/platform-of-apps/sqlserver-connect:2.0.0.final-1
     expose:
         - 8085
+        - 5005
     ports:
         - "8085:8083"
+        - "5005:5005"
     environment:
       - GROUP_ID=sqlserver-debezium
 
@@ -73,9 +75,16 @@ services:
       - CONNECT_KEY_CONVERTER_BASIC_AUTH_USER_INFO=${SCHEMA_KEY}:${SCHEMA_SECRET}
       - CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE=true
       - CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=${SCHEMA_REGISTRY}
+      - CONNECT_KEY_CONVERTER_PROXY_HOST=${PROXY_HOST}
+      - CONNECT_KEY_CONVERTER_PROXY_PORT=${PROXY_PORT}
+
       - CONNECT_VALUE_CONVERTER_BASIC_AUTH_CREDENTIALS_SOURCE=USER_INFO
       - CONNECT_VALUE_CONVERTER_BASIC_AUTH_USER_INFO=${SCHEMA_KEY}:${SCHEMA_SECRET}
       - CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE=true
       - CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=${SCHEMA_REGISTRY}
+      - CONNECT_VALUE_CONVERTER_PROXY_HOST=${PROXY_HOST}
+      - CONNECT_VALUE_CONVERTER_PROXY_PORT=${PROXY_PORT}
+
+      #- JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=0.0.0.0:5005
 
       # - JAVA_TOOL_OPTIONS=-Djava.security.debug=all
